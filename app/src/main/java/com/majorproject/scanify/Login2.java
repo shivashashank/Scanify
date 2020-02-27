@@ -39,6 +39,11 @@ public class Login2 extends AppCompatActivity {
         mLoginBtn = findViewById(R.id.loginBtn);
         mCreateBtn = findViewById(R.id.createText);
 
+        if(fAuth.getCurrentUser() != null){
+            startActivity(new Intent(getApplicationContext(),UserActivity.class));
+            finish();
+        }
+
         mLoginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +102,6 @@ public class Login2 extends AppCompatActivity {
     }
     public void onBackPressed() {
         finish();
-        startActivity(new Intent(this, Register2.class));
+        startActivity(new Intent(this, WelcomeActivity.class));
     }
 }

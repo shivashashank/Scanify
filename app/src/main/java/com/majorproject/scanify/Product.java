@@ -5,11 +5,13 @@ public class Product {
     String Pname;
     String Description;
     String Amount;
+    String Quantity;
 
     public Product()
     {
 
     }
+
     public void setBarcode(String Barcode)
     {
         this.Barcode=Barcode;
@@ -27,6 +29,9 @@ public class Product {
     {
         this.Amount=Amount;
     }
+    public void setQuantity(String Quantity){
+        this.Quantity=Quantity;
+    }
     public String getBarcode()
     {
         return Barcode;
@@ -43,5 +48,8 @@ public class Product {
     public String getAmount()
     {
         return Amount;
+    }
+    public String getQuantity(){
+        return Quantity;
     }
 }

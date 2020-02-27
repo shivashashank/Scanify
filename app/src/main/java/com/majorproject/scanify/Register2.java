@@ -134,6 +134,6 @@ public class Register2 extends AppCompatActivity {
     }
     public void onBackPressed() {
         finish();
-        startActivity(new Intent(this, WelcomeActivity.class));
+        startActivity(new Intent(this, Login2.class));
     }
 }

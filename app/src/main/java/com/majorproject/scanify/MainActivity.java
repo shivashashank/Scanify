@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     String userId;
     private Button scan,saveBtn;
     FirebaseDatabase database;
-    EditText e1,e2,e3,e4;
+    EditText e1,e2,e3,e4,e5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         e2 = findViewById(R.id.editText2);
         e3 = findViewById(R.id.editText3);
         e4 = findViewById(R.id.editText4);
+        e5 = findViewById(R.id.editText5);
         saveBtn = findViewById(R.id.save);
 
         //Firebase
@@ -92,13 +93,23 @@ public class MainActivity extends AppCompatActivity {
                 String PN = e2.getText().toString();
                 String PD = e3.getText().toString();
                 String PA = e4.getText().toString();
+                String PQ = e5.getText().toString();
                 Product PO = new Product();
                 PO.setBarcode(B);
                 PO.setDescription(PD);
                 PO.setPname(PN);
                 PO.setAmount(PA);
+                PO.setQuantity(PQ);
                 reference.push().setValue(PO);
                 Toast.makeText(getApplicationContext(),"Data Successfully Saved",Toast.LENGTH_SHORT).show();;
+            }
+        });
+        findViewById(R.id.view).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this,ViewAllProductsActivity.class);
+                startActivity(i);
+                finish();
             }
         });
     }

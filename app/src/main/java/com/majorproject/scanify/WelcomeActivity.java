@@ -16,12 +16,12 @@ public class WelcomeActivity extends AppCompatActivity {
 
     }
     public void admin(View view){
-        Intent intent = new Intent(WelcomeActivity.this, Register.class);
+        Intent intent = new Intent(WelcomeActivity.this, Login.class);
         startActivity(intent);
         finish();
     }
     public void user(View view){
-        Intent intent = new Intent(WelcomeActivity.this, Register2.class);
+        Intent intent = new Intent(WelcomeActivity.this, Login2.class);
         startActivity(intent);
         finish();
     }
