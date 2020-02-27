@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -41,7 +43,7 @@ public class UserActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     String userId;
-    private Button add,done;
+    Button add,done;
     TextView total;
     private DatabaseReference Post;
     List<Product> productList;
@@ -91,7 +93,8 @@ public class UserActivity extends AppCompatActivity {
                     for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
                         found=true;
                         Product product = productSnapshot.getValue(Product.class);
-                        product.setQuantity("1");
+                        if(Integer.parseInt(product.getQuantity())>0)
+                            product.setQuantity("1");
                         productList.add(product);
                     }
                     if(found==false) {
@@ -106,8 +109,6 @@ public class UserActivity extends AppCompatActivity {
                 Toast.makeText(UserActivity.this,"Something Went Wrong, Please Try Again!",Toast.LENGTH_SHORT).show();
             }
         };
-
-
         //checkout button
         done.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,7 +143,7 @@ public class UserActivity extends AppCompatActivity {
                 Toast.makeText(this, "You Cancelled Scanning", Toast.LENGTH_SHORT).show();
             }
             else{
-                Toast.makeText(this, "Scanned Successfully" , Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Scanned Successfully" , Toast.LENGTH_SHORT).show();
 
                 //e1.setText(result.getContents());
 
@@ -163,6 +164,33 @@ public class UserActivity extends AppCompatActivity {
         finish();
     }
     public void onBackPressed() {
-        finish();
+        //finish();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Logout");
+        builder.setMessage("Are you sure, you want to Logout?");
+        builder.setNegativeButton("Yes", null);
+        builder.setPositiveButton("No",null);
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        Button negativeButton = alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+        // override the text color of negative button
+        negativeButton.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        // provides custom implementation to negative button click
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onNegativeButtonClicked(alertDialog);
+            }
+            private void onNegativeButtonClicked(AlertDialog alertDialog) {
+                FirebaseAuth.getInstance().signOut();//logout
+                startActivity(new Intent(getApplicationContext(),Login2.class));
+                finish();
+                Toast.makeText(UserActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
+                alertDialog.dismiss();
+            }
+        });
+
     }
 }

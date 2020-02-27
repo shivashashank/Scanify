@@ -3,6 +3,7 @@ package com.majorproject.scanify;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -71,5 +72,9 @@ public class ViewAllProductsActivity extends AppCompatActivity {
             }
         });
 
+    }
+    public void onBackPressed() {
+        finish();
+        startActivity(new Intent(this, MainActivity.class));
     }
 }

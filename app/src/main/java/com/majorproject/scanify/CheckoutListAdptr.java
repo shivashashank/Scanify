@@ -27,9 +27,6 @@ public class CheckoutListAdptr extends ArrayAdapter<Product>  {
         super(context, R.layout.list_view_checkout, productList);
         this.context = context;
         this.productList = productList;
-
-
-
     }
 
     @NonNull

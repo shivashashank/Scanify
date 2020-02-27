@@ -9,7 +9,13 @@ public class Product {
 
     public Product()
     {
-
+    }
+    public Product(String Barcode,String Pname,String Description,String Amount,String Quantity){
+        this.Barcode=Barcode;
+        this.Pname=Pname;
+        this.Description=Description;
+        this.Amount=Amount;
+        this.Quantity=Quantity;
     }
 
     public void setBarcode(String Barcode)

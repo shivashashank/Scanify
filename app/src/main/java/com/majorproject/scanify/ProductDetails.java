@@ -120,7 +120,7 @@ public class ProductDetails extends AppCompatActivity implements PaymentResultLi
 
     @Override
     public void onPaymentSuccess(String s) {
-        Toast.makeText(ProductDetails.this,"Payment Successfull",Toast.LENGTH_SHORT).show();
+        Toast.makeText(ProductDetails.this,"Payment Successful",Toast.LENGTH_SHORT).show();
     }
 
     @Override
