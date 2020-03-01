@@ -40,13 +40,14 @@ import javax.annotation.Nullable;
 
 public class UserActivity extends AppCompatActivity {
     public static final String EXTRA_NUMBER = "com.majorproject.scanify.EXTRA_NUMBER";
+    public static final String EXTRA_LIST = "com.majorproject.scanify.EXTRA_LIST";
     FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     String userId;
     Button add,done;
     TextView total;
     private DatabaseReference Post;
-    List<Product> productList;
+    ArrayList<Product> productList;
     ValueEventListener valueEventListener;
     ListView listViewAllProducts;
 
@@ -71,49 +72,31 @@ public class UserActivity extends AppCompatActivity {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                IntentIntegrator integrator = new IntentIntegrator(activity);
-                integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
-                integrator.setPrompt("Scan");
-                integrator.setCameraId(0);
-                integrator.setBeepEnabled(true);
-                //integrator.setOrientationLocked(false);
-                integrator.initiateScan();
+                try {
+                    IntentIntegrator integrator = new IntentIntegrator(activity);
+                    integrator.setDesiredBarcodeFormats(IntentIntegrator.ALL_CODE_TYPES);
+                    integrator.setPrompt("Scan");
+                    integrator.setCameraId(0);
+                    integrator.setBeepEnabled(true);
+                    //integrator.setOrientationLocked(false);
+                    integrator.initiateScan();
+                }
+                catch(Exception e){
+                    Toast.makeText(UserActivity.this,"Exception: "+e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        valueEventListener=new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               /* String post = "Amount : "+dataSnapshot.child("amount").getValue(Product.class)+"\n"
-                        +"Barcode : "+dataSnapshot.child("barcode").getValue(Product.class)+"\n"
-                        +"Description : "+dataSnapshot.child("description").getValue(Product.class)+"\n"
-                        +"Product Name : "+dataSnapshot.child("pname").getValue(String.class);*/
-                    boolean found=false;
-//                        productList.clear();
-                    for (DataSnapshot productSnapshot : dataSnapshot.getChildren()) {
-                        found=true;
-                        Product product = productSnapshot.getValue(Product.class);
-                        if(Integer.parseInt(product.getQuantity())>0)
-                            product.setQuantity("1");
-                        productList.add(product);
-                    }
-                    if(found==false) {
-                        Toast.makeText(UserActivity.this, "This Product is not in Your Inventory", Toast.LENGTH_SHORT).show();
-                    }
-
-                CheckoutListAdptr adapter = new CheckoutListAdptr(UserActivity.this, productList);
-                listViewAllProducts.setAdapter(adapter);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(UserActivity.this,"Something Went Wrong, Please Try Again!",Toast.LENGTH_SHORT).show();
-            }
-        };
         //checkout button
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               checkout();
+                if(productList.size()>0)
+                    checkout();
+                else{
+                    Toast.makeText(UserActivity.this,"Please add atleast one item to checkout",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
     }
@@ -129,6 +112,7 @@ public class UserActivity extends AppCompatActivity {
         //Toast.makeText(UserActivity.this, "Final Amount = "+totalAmount, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this,ProductDetails.class);
         intent.putExtra(EXTRA_NUMBER,totalAmount);
+        intent.putParcelableArrayListExtra(EXTRA_LIST,productList);
         startActivity(intent);
         finish();
     }
@@ -143,17 +127,46 @@ public class UserActivity extends AppCompatActivity {
                 Toast.makeText(this, "You Cancelled Scanning", Toast.LENGTH_SHORT).show();
             }
             else{
-                //Toast.makeText(this, "Scanned Successfully" , Toast.LENGTH_SHORT).show();
+               // Toast.makeText(this, "Scanned Successfully "+result.getContents() , Toast.LENGTH_SHORT).show();
 
                 //e1.setText(result.getContents());
-
-                Query query=Post.orderByChild("barcode").equalTo(result.getContents());
-                query.addListenerForSingleValueEvent(valueEventListener);
+                Query query=Post.child(result.getContents());
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+               /* String post = "Amount : "+dataSnapshot.child("amount").getValue(Product.class)+"\n"
+                        +"Barcode : "+dataSnapshot.child("barcode").getValue(Product.class)+"\n"
+                        +"Description : "+dataSnapshot.child("description").getValue(Product.class)+"\n"
+                        +"Product Name : "+dataSnapshot.child("pname").getValue(String.class);*/
+                        boolean found=false;
+                        //productList.clear();
+                        if (dataSnapshot.getValue()!=null) {
+                            found=true;
+                            Product product = dataSnapshot.getValue(Product.class);
+                            int quantity=Integer.parseInt(product.getQuantity());
+                            if(quantity>0) {
+                                product.setQuantity("1");
+                                productList.add(product);
+                            }
+                            else if(quantity==0){
+                                Toast.makeText(UserActivity.this,"Product Out of Stock",Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        if(found==false) {
+                            Toast.makeText(UserActivity.this, "This Product is not in Your Inventory", Toast.LENGTH_SHORT).show();
+                        }
+                        CheckoutListAdptr adapter = new CheckoutListAdptr(UserActivity.this, productList);
+                        listViewAllProducts.setAdapter(adapter);
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(UserActivity.this,"Something Went Wrong, Please Try Again!",Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
         }
         else {
-
             super.onActivityResult(requestCode, resultCode, data);
         }
     }

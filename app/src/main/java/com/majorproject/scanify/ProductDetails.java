@@ -38,7 +38,8 @@ public class ProductDetails extends AppCompatActivity implements PaymentResultLi
     Button pay;
     String TAG="Payment Error";
     int number;
-
+    ArrayList<Product> productArrayList=null;
+    DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +49,7 @@ public class ProductDetails extends AppCompatActivity implements PaymentResultLi
 
         Intent intent = getIntent();
         number = intent.getIntExtra(UserActivity.EXTRA_NUMBER,0);
-
+        productArrayList=intent.getExtras().getParcelableArrayList(UserActivity.EXTRA_LIST);
         total.setText("Total Amount: "+number);
 
         Checkout.preload(getApplicationContext());
@@ -116,11 +117,33 @@ public class ProductDetails extends AppCompatActivity implements PaymentResultLi
             Log.e(TAG, "Error in starting Razorpay Checkout", e);
         }
     }
+    private void updateDatabase(){
+        reference=FirebaseDatabase.getInstance().getReference().child("Product");
+        for(final Product productlist:productArrayList){
+            reference.child(productlist.getBarcode()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Product dbproduct=dataSnapshot.getValue(Product.class);
+                    int unused_quantity=Integer.parseInt(dbproduct.getQuantity());
+                    int used_quantity=Integer.parseInt(productlist.getQuantity());
+                    int updated_quantity=unused_quantity-used_quantity;
+                    if(updated_quantity>=0){
+                        dataSnapshot.getRef().child("quantity").setValue(""+(unused_quantity-used_quantity));
+                        Toast.makeText(ProductDetails.this, "Quantity Updated", Toast.LENGTH_SHORT).show();
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                }
+            });
+        }
+    }
     @Override
     public void onPaymentSuccess(String s) {
         Toast.makeText(ProductDetails.this,"Payment Successful",Toast.LENGTH_SHORT).show();
+        updateDatabase();
     }
 
     @Override

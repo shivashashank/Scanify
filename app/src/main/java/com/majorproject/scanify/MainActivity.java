@@ -157,22 +157,24 @@ public class MainActivity extends AppCompatActivity {
             else{
                 Toast.makeText(this, "Scanned Successfully" , Toast.LENGTH_SHORT).show();
                 e1.setText(result.getContents());
-                Query getData=reference.orderByChild("barcode").equalTo(result.getContents());
+                Query getData=reference.child(result.getContents());
                 getData.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Toast.makeText(MainActivity.this, "Product Exists" , Toast.LENGTH_SHORT).show();
-                        for(DataSnapshot productSnapshot:dataSnapshot.getChildren()) {
-                            Product product = productSnapshot.getValue(Product.class);
-                            e1.setEnabled(false);
-                            e2.setText(product.getPname());
-                            e2.setEnabled(false);
-                            e3.setText(product.getDescription());
-                            e3.setEnabled(false);
-                            e4.setText(product.getAmount());
-                            e4.setEnabled(false);
-                            e5.setText(product.getQuantity());
-                            quantity=Integer.parseInt(product.getQuantity());
+                        if(dataSnapshot.getValue()!=null) {
+                            Product product = dataSnapshot.getValue(Product.class);
+                            if (product != null) {
+                                Toast.makeText(MainActivity.this, "Product Exists" , Toast.LENGTH_SHORT).show();
+                                e1.setEnabled(false);
+                                e2.setText(product.getPname());
+                                e2.setEnabled(false);
+                                e3.setText(product.getDescription());
+                                e3.setEnabled(false);
+                                e4.setText(product.getAmount());
+                                e4.setEnabled(false);
+                                e5.setText(product.getQuantity());
+                                quantity = Integer.parseInt(product.getQuantity());
+                            }
                         }
                     }
 

@@ -60,7 +60,8 @@ public class ViewAllProductsActivity extends AppCompatActivity {
                 for(DataSnapshot productSnapshot : dataSnapshot.getChildren())
                 {
                     Product product = productSnapshot.getValue(Product.class);
-                    productList.add(product);
+                    if(Integer.parseInt(product.getQuantity())>=0)
+                        productList.add(product);
 
                 }
                 ProductsListAdptr adapter = new ProductsListAdptr(ViewAllProductsActivity.this, productList);

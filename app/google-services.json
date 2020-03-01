@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "675787419229-0tr78plcrgul1jl6pm7uipuccsade7rc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.majorproject.scanify",
+            "certificate_hash": "f24f43faa4e850bb80a368b586b41b048185de50"
+          }
+        },
+        {
           "client_id": "675787419229-8efdkuf0t1pqkfdtj9qs87c1s9k63cqf.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

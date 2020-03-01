@@ -15,13 +15,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class CheckoutListAdptr extends ArrayAdapter<Product>  {
 
     private Activity context;
     private List<Product> productList;
-
-
-
+    private int dbquantity=1;
+    private boolean found=false;
     public CheckoutListAdptr(Activity context , List<Product> productList)
     {
         super(context, R.layout.list_view_checkout, productList);
@@ -34,7 +39,6 @@ public class CheckoutListAdptr extends ArrayAdapter<Product>  {
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         LayoutInflater inflater = context.getLayoutInflater();
-
         final View productitem = inflater.inflate(R.layout.list_view_checkout, null,true);
 
         final  TextView name = (TextView) productitem.findViewById(R.id.textView17);
@@ -44,8 +48,6 @@ public class CheckoutListAdptr extends ArrayAdapter<Product>  {
 
         Button plus = (Button) productitem.findViewById(R.id.plus);
         Button minus = (Button) productitem.findViewById(R.id.minus);
-
-
 
         Product product =  productList.get(position);
 
@@ -60,11 +62,34 @@ public class CheckoutListAdptr extends ArrayAdapter<Product>  {
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              Product prod  =  productList.get(position);
-             int quant = Integer.parseInt(quantity.getText().toString());
-              quant++;
-              prod.setQuantity(String.valueOf(quant));
-              quantity.setText(String.valueOf(quant));
+              final Product prod  =  productList.get(position);
+              int quant = Integer.parseInt(quantity.getText().toString());
+              FirebaseDatabase.getInstance().getReference().child("Product").child(prod.getBarcode()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() != null) {
+                            Product p = dataSnapshot.getValue(Product.class);
+                            dbquantity = Integer.parseInt(p.getQuantity());
+                            found=true;
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+              });
+              if (++quant>dbquantity && found) {
+                  --quant;
+                  Toast.makeText(context, "Maximum stock limit reached", Toast.LENGTH_SHORT).show();
+                  prod.setQuantity(String.valueOf(quant));
+                  quantity.setText(String.valueOf(quant));
+              }
+              else {
+                  found=false;
+                  prod.setQuantity(String.valueOf(quant));
+                  quantity.setText(String.valueOf(quant));
+              }
             }
         });
 
@@ -81,12 +106,9 @@ public class CheckoutListAdptr extends ArrayAdapter<Product>  {
                 else{
                     Toast.makeText(context, "Quantity Cannot be Less than 1", Toast.LENGTH_SHORT).show();
                 }
-//                Toast.makeText(context, prod.getQuantity().toString(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, prod.getQuantity().toString(), Toast.LENGTH_SHORT).show();
             }
         });
-
         return productitem;
     }
-
-
 }

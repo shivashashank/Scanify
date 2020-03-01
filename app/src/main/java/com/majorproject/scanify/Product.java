@@ -1,6 +1,9 @@
 package com.majorproject.scanify;
 
-public class Product {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Product implements Parcelable {
     String Barcode;
     String Pname;
     String Description;
@@ -9,6 +12,14 @@ public class Product {
 
     public Product()
     {
+    }
+    protected Product(Parcel in) {
+        // put your data using = in.readString();
+        this.Barcode = in.readString();;
+        this.Pname = in.readString();;
+        this.Description = in.readString();;
+        this.Amount=in.readString();
+        this.Quantity=in.readString();
     }
     public Product(String Barcode,String Pname,String Description,String Amount,String Quantity){
         this.Barcode=Barcode;
@@ -57,5 +68,29 @@ public class Product {
     }
     public String getQuantity(){
         return Quantity;
+    }
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(Barcode);
+        dest.writeString(Pname);
+        dest.writeString(Description);
+        dest.writeString(Amount);
+        dest.writeString(Quantity);
     }
 }
