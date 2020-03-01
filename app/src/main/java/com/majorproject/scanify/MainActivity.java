@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseFirestore fStore;
     DatabaseReference reference;
     String userId;
-    Button scan,saveBtn;
+    Button scan,saveBtn,checkout,viewall;
     FirebaseDatabase database;
     EditText e1,e2,e3,e4,e5;
     int quantity=0;
@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         e4 = findViewById(R.id.editText4);
         e5 = findViewById(R.id.editText5);
         saveBtn = findViewById(R.id.save);
+        checkout = findViewById(R.id.addtocart);
+        viewall = findViewById(R.id.view);
 
         //Firebase
         database=FirebaseDatabase.getInstance();
@@ -133,11 +135,19 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        findViewById(R.id.view).setOnClickListener(new View.OnClickListener() {
+        viewall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this,ViewAllProductsActivity.class);
                 startActivity(i);
+                finish();
+            }
+        });
+        checkout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this,AdmincheckoutActivity.class);
+                startActivity(intent);
                 finish();
             }
         });

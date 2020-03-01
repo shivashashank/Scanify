@@ -15,8 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ProductDetails">
-        </activity>
+        <activity android:name=".Admincheckout2Activity"></activity>
+        <activity android:name=".AdmincheckoutActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".ProductDetails" />
         <activity android:name=".ViewAllProductsActivity" />
         <activity android:name=".Login2" />
         <activity android:name=".Register2" />
@@ -26,8 +28,9 @@
         <activity android:name=".Login" />
         <activity android:name=".Register" />
         <activity android:name=".WelcomeActivity" />
-        <activity android:name=".SplashActivity"
-            android:theme="@style/SplashTheme" >
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

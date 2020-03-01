@@ -32,91 +32,35 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class ProductDetails extends AppCompatActivity implements PaymentResultListener {
+public class Admincheckout2Activity extends AppCompatActivity {
 
     TextView total;
     Button pay;
-    String TAG="Payment Error";
     int number;
     ArrayList<Product> productArrayList=null;
     DatabaseReference reference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_details);
+        setContentView(R.layout.activity_admincheckout2);
 
         total = findViewById(R.id.totalamount);
 
         Intent intent = getIntent();
-        number = intent.getIntExtra(UserActivity.EXTRA_NUMBER,0);
-        productArrayList=intent.getExtras().getParcelableArrayList(UserActivity.EXTRA_LIST);
+        number = intent.getIntExtra(AdmincheckoutActivity.EXTRA_NUMBER,0);
+        productArrayList=intent.getExtras().getParcelableArrayList(AdmincheckoutActivity.EXTRA_LIST);
         total.setText("Total Amount: "+number);
 
-        Checkout.preload(getApplicationContext());
         pay = findViewById(R.id.pay);
         pay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startPayment();
+                updateDatabase();
             }
         });
     }
 
-        public void onBackPressed() {
-        finish();
-        startActivity(new Intent(this, UserActivity.class));
-    }
-    public void startPayment() {
-        /**
-         * Instantiate Checkout
-         */
-        Checkout checkout = new Checkout();
-        checkout.setKeyID("rzp_test_11plS1wESEcbza");
 
-        /**
-         * Set your logo here
-         */
-        //checkout.setImage(R.drawable.logo);
-
-        /**
-         * Reference to current activity
-         */
-        final Activity activity = this;
-
-        /**
-         * Pass your payment options to the Razorpay Checkout as a JSONObject
-         */
-        try {
-            JSONObject options = new JSONObject();
-
-            /**
-             * Merchant Name
-             * eg: ACME Corp || HasGeek etc.
-             */
-            options.put("name", "Scanify");
-
-            /**
-             * Description can be anything
-             * eg: Reference No. #123123 - This order number is passed by you for your internal reference. This is not the `razorpay_order_id`.
-             *     Invoice Payment
-             *     etc.
-             */
-            options.put("description", "Payment");
-            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png");
-            //options.put("order_id", "order_9A33XWu170gUtm");
-            options.put("currency", "INR");
-
-            /**
-             * Amount is always passed in currency subunits
-             * Eg: "500" = INR 5.00
-             */
-            options.put("amount", ""+number*100);
-
-            checkout.open(activity, options);
-        } catch(Exception e) {
-            Log.e(TAG, "Error in starting Razorpay Checkout", e);
-        }
-    }
     private void updateDatabase(){
         reference=FirebaseDatabase.getInstance().getReference().child("Product");
         for(final Product productlist:productArrayList){
@@ -129,8 +73,8 @@ public class ProductDetails extends AppCompatActivity implements PaymentResultLi
                     int updated_quantity=unused_quantity-used_quantity;
                     if(updated_quantity>=0){
                         dataSnapshot.getRef().child("quantity").setValue(""+(unused_quantity-used_quantity));
-                        Toast.makeText(ProductDetails.this, "Quantity Updated", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(ProductDetails.this,UserActivity.class);
+                        Toast.makeText(Admincheckout2Activity.this, "Quantity Updated", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Admincheckout2Activity.this,AdmincheckoutActivity.class);
                         startActivity(intent);
                         finish();
                     }
@@ -143,14 +87,8 @@ public class ProductDetails extends AppCompatActivity implements PaymentResultLi
             });
         }
     }
-    @Override
-    public void onPaymentSuccess(String s) {
-        Toast.makeText(ProductDetails.this,"Payment Successful",Toast.LENGTH_SHORT).show();
-        updateDatabase();
-    }
-
-    @Override
-    public void onPaymentError(int i, String s) {
-        Toast.makeText(ProductDetails.this,"Payment Error",Toast.LENGTH_SHORT).show();
+    public void onBackPressed() {
+        finish();
+        startActivity(new Intent(this, AdmincheckoutActivity.class));
     }
 }
