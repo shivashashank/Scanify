@@ -1,3 +1,4 @@
 # Scanify
 
-Currently under development. Stay  tuned
+All updates are live.
+
